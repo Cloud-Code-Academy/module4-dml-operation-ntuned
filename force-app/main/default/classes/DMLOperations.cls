@@ -48,8 +48,9 @@ public with sharing class DMLOperations {
      */
     public static void createAccount(String name, String industry) {
         // Create a new Account and set the fields inline
-
+        Account myAccount = new Account(Name = name, Industry = industry);
         // Insert the Account
+        insert myAccount;
     }
 
     
@@ -61,14 +62,15 @@ public with sharing class DMLOperations {
      */
     public static Id insertNewContact(Id accountId) {
         // Create a new Contact instance
-
+        Contact newContact = new Contact(LastName = 'Doe');
         // Set some fields on the Contact
         // Set the AccountId field to the given accountId
-
+        newContact.AccountId = accountId;
         // Insert the Contact into the database
-
+        insert newContact;
+        String contactId = newContact.Id;
         // Return the Id of the newly created Contact
-        return null;
+        return contactId;
     }
 
     /**
@@ -80,11 +82,11 @@ public with sharing class DMLOperations {
      */
     public static void updateContactLastName(Id contactId, String newLastName) {
         // Retrieve the Contact from the database
-        // [SELECT Id FROM Contact WHERE Id = :contactId]
-
+        Contact existingContact = [SELECT Id FROM Contact WHERE Id = :contactId];
         // Update the Contact's last name
-
+        existingContact.LastName = newLastName;
         // Update the Contact in the database
+        update existingContact;
     }
 
     /**
@@ -96,11 +98,11 @@ public with sharing class DMLOperations {
      */
     public static void updateOpportunityStage(Id oppId, String newStage) {
         // Retrieve the Opportunity from the database
-        // [SELECT Id FROM Opportunity WHERE Id = :oppId]
-
+        Opportunity updateStage = [SELECT Id FROM Opportunity WHERE Id = :oppId];
         // Update the Opportunity's stage
-
+        updateStage.StageName = newStage;
         // Update the Opportunity in the database
+        update updateStage;
     }
 
     /**
@@ -113,9 +115,11 @@ public with sharing class DMLOperations {
      */
     public static void updateAccountFields(Id accountId, String newName, String newIndustry) {
         // Query the account
-        // [SELECT Id FROM Account WHERE Id = :accountId]
-
+        Account updateAccount = [SELECT Id FROM Account WHERE Id = :accountId];
         // Update the Account with the given Id with the new name and industry
+        updateAccount.Name = newName;
+        updateAccount.Industry = newIndustry;
+        update updateAccount;
     }
 
 
@@ -129,6 +133,14 @@ public with sharing class DMLOperations {
      */
     public static void upsertOpportunityList(List<Opportunity> opportunities) {
         // Loop through each Opportunity in the list
+        Integer months = 3;
+        List<Opportunity> updatedOpportunities = new List<Opportunity>(opportunities);
+        for (Opportunity opp : opportunities){
+            opp.StageName = 'Qualification';
+            opp.CloseDate = Date.today().addMonths(months);
+            opp.Amount = 5000;
+        }
+        upsert updatedOpportunities;
             // Set the Opportunity's Stage to Qualification
             // Set the Opportunity's Close Date to 3 months from today
             // Set the Opportunity's Amount to 50000
