@@ -133,18 +133,19 @@ public with sharing class DMLOperations {
      */
     public static void upsertOpportunityList(List<Opportunity> opportunities) {
         // Loop through each Opportunity in the list
-        Integer months = 3;
-        List<Opportunity> updatedOpportunities = new List<Opportunity>(opportunities);
-        for (Opportunity opp : opportunities){
-            opp.StageName = 'Qualification';
-            opp.CloseDate = Date.today().addMonths(months);
-            opp.Amount = 5000;
-        }
-        upsert updatedOpportunities;
-            // Set the Opportunity's Stage to Qualification
+        // Set the Opportunity's Stage to Qualification
             // Set the Opportunity's Close Date to 3 months from today
             // Set the Opportunity's Amount to 50000
         // Upsert the opportunities List so that records are either updated or created
+        Integer closedMonths = 3;
+        Integer oppAmount = 50000;
+        List<Opportunity> updatedOpportunities = new List<Opportunity>(opportunities);
+        for (Opportunity opp : opportunities){
+            opp.StageName = 'Qualification';
+            opp.CloseDate = Date.today().addMonths(closedMonths);
+            opp.Amount = oppAmount;
+        }
+        upsert updatedOpportunities;
     }
 
     /**
@@ -159,9 +160,16 @@ public with sharing class DMLOperations {
      */
     public static void upsertOpportunities(String accountName, List<String> oppNames) {
         // Loop through each Opportunity name
-            // Create an Opportunity with the given name
-            // Add the Opportunity to the list
+        // Create an Opportunity with the given name
+        // Add the Opportunity to the list
+        Set<String> uniqueOpportunities = new Set<String>(oppNames);
+        for (String name : uniqueOpportunities){
+            
+        }
+            
     }
+    
+    
     
     /**
      * Question 9
@@ -176,7 +184,12 @@ public with sharing class DMLOperations {
 		List<Account> accounts = [SELECT Id FROM Account WHERE Name = :accountName];
 
 		// if the Account exists, update the description
-
+        if (accounts.name = accountName) {
+            accounts.description = 'Updated Account';
+        } else {
+            Account createAccount = new Account(Name = accountName);
+            createAccount.Description = 'New Account';
+        }
 		// otherwise, create a new Account and set the description
 
 		// Upsert the Account
